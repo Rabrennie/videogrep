@@ -151,7 +151,31 @@ def search(
 
             queries = query.split(" ")
             queries = [q.strip() for q in queries if q.strip() != ""]
-            print(queries)
+            fragments = zip(*[words[i:] for i in range(len(queries))])
+            for fragment in fragments:
+                found = all(re.search(q, w["word"]) for q, w in zip(queries, fragment))
+                if found:
+                    phrase = " ".join([w["word"] for w in fragment])
+                    segments.append(
+                        {
+                            "file": file,
+                            "start": fragment[0]["start"],
+                            "end": fragment[-1]["end"],
+                            "content": phrase,
+                        }
+                    )
+
+        elif search_type == "fragment":
+            if "words" not in transcript[0]:
+                print("Could not find word-level timestamps for", file)
+                continue
+
+            words = []
+            for line in transcript:
+                words += line["words"]
+
+            queries = query.split(" ")
+            queries = [q.strip() for q in queries if q.strip() != ""]
             fragments = zip(*[words[i:] for i in range(len(queries))])
             for fragment in fragments:
                 found = all(re.search(q, w["word"]) for q, w in zip(queries, fragment))
@@ -189,6 +213,32 @@ def search(
                             "content": content,
                         }
                     )
+
+        elif search_type == "firstword":
+            if "words" not in transcript[0]:
+                print("Could not find word-level timestamps for", file)
+                continue
+
+            words = []
+            for line in transcript:
+                words += line["words"]
+
+            queries = query.split(" ")
+            queries = [q.strip() for q in queries if q.strip() != ""]
+            fragments = zip(*[words[i:] for i in range(len(queries))])
+            for fragment in fragments:
+                found = all(re.search(q, w["word"]) for q, w in zip(queries, fragment))
+                if found:
+                    phrase = " ".join([w["word"] for w in fragment])
+                    segments.append(
+                        {
+                            "file": file,
+                            "start": fragment[0]["start"],
+                            "end": fragment[-1]["end"],
+                            "content": phrase,
+                        }
+                    )
+                    break
     return segments
 
 
