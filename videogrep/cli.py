@@ -23,7 +23,7 @@ def main():
         "-st",
         dest="searchtype",
         default="sentence",
-        choices=["sentence", "fragment"],
+        choices=["sentence", "fragment", "words"],
         help="type of search - can either be 'sentence' or 'fragment'",
     )
     parser.add_argument(

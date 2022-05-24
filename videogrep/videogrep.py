@@ -151,6 +151,7 @@ def search(
 
             queries = query.split(" ")
             queries = [q.strip() for q in queries if q.strip() != ""]
+            print(queries)
             fragments = zip(*[words[i:] for i in range(len(queries))])
             for fragment in fragments:
                 found = all(re.search(q, w["word"]) for q, w in zip(queries, fragment))
@@ -162,6 +163,30 @@ def search(
                             "start": fragment[0]["start"],
                             "end": fragment[-1]["end"],
                             "content": phrase,
+                        }
+                    )
+
+        elif search_type == "words":
+            for line in transcript:
+                if re.search(query, line["content"]):
+                    start = 0
+                    end = 0
+                    content = ""
+                    # TODO: Hacky implementation, clean this up
+                    werds = re.search(query, line["content"]).group().split()
+                    for idx2, word in enumerate(werds):
+                        for idx, w in enumerate(line['words']):
+                            if word == w['word']:
+                                if start == 0:
+                                    start = w['start']
+                                end = w['end']
+                                content += w['word']
+                    segments.append(
+                        {
+                            "file": file,
+                            "start": start,
+                            "end": end,
+                            "content": content,
                         }
                     )
     return segments
